@@ -1,0 +1,12 @@
+version = 0.1
+[prd-tf-879344597236]
+[prd-tf-879344597236.deploy]
+[prd-tf-879344597236.deploy.parameters]
+stack_name = "test-sam-prj-addressnet"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-5gp23zi899h1"
+s3_prefix = "test-sam-prj-addressnet"
+region = "us-east-1"
+profile = "prd-tf-879344597236"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["InferenceFunction=879344597236.dkr.ecr.us-east-1.amazonaws.com/test-sam-prj-addressnet"]
