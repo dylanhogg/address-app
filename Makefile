@@ -1,7 +1,7 @@
 # https://aws.amazon.com/blogs/compute/deploying-machine-learning-models-with-serverless-templates/
-PROFILE=prd-tf-879344597236
+PROFILE=prd-non-tf-905234897161
 PROJECT_NAME=test-sam-prj-addressnet
-AWS_ACCOUNT=879344597236
+AWS_ACCOUNT=905234897161
 AWS_REGION=us-east-1
 
 test-build:
@@ -44,7 +44,7 @@ create-ecr-repo:
     --image-scanning-configuration scanOnPush=true
     # Copy the repositoryUri from the output. This is needed in the next step.
     # Initiate the AWS SAM guided deployment using the deploy command
-    # 879344597236.dkr.ecr.us-east-1.amazonaws.com/test-sam-prj-addressnet
+    # ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/test-sam-prj-addressnet
 
 sam-deploy-initial:
 	# sam deploy --guided
@@ -66,7 +66,7 @@ sam-deploy:
 	--stack-name ${PROJECT_NAME} \
 
 destroy-ecr:
-	aws ecr delete-repository --profile ${PROFILE} --registry-id 879344597236 --repository-name ${PROJECT_NAME} --force
+	aws ecr delete-repository --profile ${PROFILE} --registry-id ${AWS_ACCOUNT} --repository-name ${PROJECT_NAME} --force
 
 destroy-cf:
 	aws cloudformation delete-stack --profile ${PROFILE} --stack-name ${PROJECT_NAME}
