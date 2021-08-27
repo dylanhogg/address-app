@@ -59,11 +59,10 @@ sam-deploy-initial:
 sam-deploy:
 	# sam deploy --guided
 	sam deploy \
-	--guided \
 	--profile ${PROFILE} \
 	--config-env ${PROFILE} \
 	--region ${AWS_REGION} \
-	--stack-name ${PROJECT_NAME} \
+	--stack-name ${PROJECT_NAME}
 
 destroy-ecr:
 	aws ecr delete-repository --profile ${PROFILE} --registry-id ${AWS_ACCOUNT} --repository-name ${PROJECT_NAME} --force

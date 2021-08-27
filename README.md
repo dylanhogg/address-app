@@ -1,6 +1,7 @@
 # test-sam-prj-addressnet
 
-This project contains source code and supporting files for a serverless application for classifying handwritten digits using a Machine Learning model in [Tensorflow](https://www.tensorflow.org/). It includes the following files and folders:
+This project contains source code and supporting files for a serverless application for 
+converting free-text Australian addresses to [GNAF](https://data.gov.au/dataset/ds-dga-19432f89-dc3a-4ef3-b943-5326ef1dbecc/details) segmented addresses. It includes the following files and folders:
 
 - app/app.py - Code for the application's Lambda function including the code for ML inferencing.
 - app/Dockerfile - The Dockerfile to build the container image.

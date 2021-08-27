@@ -4,15 +4,27 @@ Transform: AWS::Serverless-2016-10-31
 
 Globals:
   Function:
-    Timeout: 120
-    MemorySize: 1024
-  Api:
-    BinaryMediaTypes:
-      - image/png
-      - image/jpg
-      - image/jpeg
+    Timeout: 60
+    MemorySize: 512
 
 Resources:
+  InferenceApiCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: address-api.infocruncher.com
+      ValidationMethod: DNS
+
+  InferenceApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Inference Api Gateway
+      StageName: Prod
+      Domain:
+        DomainName: address-api.infocruncher.com
+        CertificateArn: !Ref InferenceApiCertificate
+        Route53:
+          HostedZoneName: "infocruncher.com."
+
   InferenceFunction:
     # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -25,7 +37,8 @@ Resources:
           # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Type: Api
           Properties:
-            Path: /classify_digit
+            RestApiId: !Ref InferenceApi
+            Path: /predict
             Method: post
     Metadata:
       Dockerfile: Dockerfile
@@ -36,12 +49,15 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  InferenceApi:
+  InferenceApiUrl:
     Description: "API Gateway endpoint URL for Prod stage for Inference function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/classify_digit/"
+    Value: !Sub "https://${InferenceApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/predict/"
+  InferenceApiId:
+    Description: 'API Gateway ARN for InferenceApi'
+    Value: !Ref InferenceApi
+  BasicAWSApiGatewayRootResourceId:
+    Description: 'API Gateway RootResourceId for InferenceApi'
+    Value: !GetAtt InferenceApi.RootResourceId
   InferenceFunction:
     Description: "Inference Lambda Function ARN"
-    Value: !GetAtt InferenceFunction.Arn
-  InferenceFunctionIamRole:
-    Description: "Implicit IAM Role created for Inference function"
     Value: !GetAtt InferenceFunction.Arn
