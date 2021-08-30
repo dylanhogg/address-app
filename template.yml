@@ -5,7 +5,11 @@ Transform: AWS::Serverless-2016-10-31
 Globals:
   Function:
     Timeout: 60
-    MemorySize: 512
+    MemorySize: 1024
+    ReservedConcurrentExecutions: 20
+#    Environment:
+#      Variables:
+#        TABLE_NAME: data-table
 
 Resources:
   InferenceApiCertificate:
@@ -19,11 +23,21 @@ Resources:
     Properties:
       Name: Inference Api Gateway
       StageName: Prod
+      TracingEnabled: true
+      # EndpointConfiguration: REGIONAL
+      Cors:  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-corsconfiguration.html
+        AllowMethods: "'POST, GET'"
+        AllowHeaders: "'X-Forwarded-For'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+        # AllowCredentials: true
       Domain:
         DomainName: address-api.infocruncher.com
         CertificateArn: !Ref InferenceApiCertificate
         Route53:
           HostedZoneName: "infocruncher.com."
+      Tags:
+        App: AddressPrediction
 
   InferenceFunction:
     # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html

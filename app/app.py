@@ -42,6 +42,8 @@ def lambda_handler(event, context):
 
     version = "0.1.4"
 
+    logger.info(f'event: [{event}]')
+
     if not "body" in event:
         raise Exception("body key not found in event")
 
@@ -75,5 +77,8 @@ def lambda_handler(event, context):
                 "version": version
             }
         ),
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+        },
         "isBase64Encoded": False
     }

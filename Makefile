@@ -47,7 +47,6 @@ create-ecr-repo:
     # ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/test-sam-prj-addressnet
 
 sam-deploy-initial:
-	# sam deploy --guided
 	sam deploy \
 	--guided \
 	--profile ${PROFILE} \
@@ -57,7 +56,6 @@ sam-deploy-initial:
 	--image-repository ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME}
 
 sam-deploy:
-	# sam deploy --guided
 	sam deploy \
 	--profile ${PROFILE} \
 	--config-env ${PROFILE} \
