@@ -1,8 +1,8 @@
 import os
 import argparse
 import json
+from datetime import datetime
 from addressnet.predict import predict_one
-from loguru import logger
 
 
 def lambda_handler(event, context):
@@ -20,29 +20,9 @@ def lambda_handler(event, context):
     API Gateway Lambda Proxy Output Format: dict
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
+    start = datetime.now()
 
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("model_dir", help="Pretrained model directory")
-    # parser.add_argument("address", help="Address string")
-    # args = parser.parse_args()
-    #
-    # predict_result = predict_one(args.address, args.model_dir)
-    # logger.info(f'Model file    : {args.model_dir}')
-    # logger.info(f'Input address : {args.address}')
-    # logger.info(f'Predict result: {predict_result}')
-
-    # return {
-    #     'statusCode': 200,
-    #     'body': json.dumps(
-    #         {
-    #             "event": event
-    #         }
-    #     )
-    # }
-
-    version = "0.1.4"
-
-    logger.info(f'event: [{event}]')
+    print(f'INFO: event: [{event}]')
 
     if not "body" in event:
         raise Exception("body key not found in event")
@@ -63,18 +43,24 @@ def lambda_handler(event, context):
         raise Exception("address key not found in event body")
 
     address = data["address"]
+
+    max_address_length = 150
+    if len(address) > max_address_length:
+        raise Exception(f"address length must be less than {max_address_length} chars")
+
     model_dir = "/opt/ml/model/pretrained"
     predict_result = predict_one(address, model_dir)
 
-    logger.info(f'address: [{address}] -> predict_result: {predict_result}')
+    print(f'INFO: address: [{address}] -> predict_result: {predict_result}')
 
     return {
         "statusCode": 200,
         "body": json.dumps(
             {
                 "address": address,
-                "predict_result": predict_result,
-                "version": version
+                "result": predict_result,
+                "time": str(datetime.now() - start),
+                "version": "0.1.5"
             }
         ),
         "headers": {

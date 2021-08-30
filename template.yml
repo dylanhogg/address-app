@@ -5,7 +5,7 @@ Transform: AWS::Serverless-2016-10-31
 Globals:
   Function:
     Timeout: 60
-    MemorySize: 1024
+    MemorySize: 1769  # 1769 = 1 vCPU
     ReservedConcurrentExecutions: 20
 #    Environment:
 #      Variables:

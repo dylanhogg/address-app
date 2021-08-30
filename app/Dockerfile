@@ -6,7 +6,6 @@ COPY requirements.txt ./
 RUN python3.7 -m pip install --upgrade pip
 RUN python3.7 -m pip install -r requirements.txt -t .
 
-COPY library ./library
 COPY addressnet ./addressnet
 COPY app.py ./
 
