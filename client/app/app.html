@@ -29,14 +29,15 @@
 <body>
     <div id="container">
         <h4>Address Parser</h4>
-        <span>Type an address...</span>
+        <div>Type an address...</div>
 
-<!--        <form id="address-form" action="https://address-api.infocruncher.com/predict/" method="post">-->
-            <input type="text" id="address-text" name="address-text" value="Unit 18/14-18 Flood St, Bondi, NSW 2026"/>
-            <br />
-            <br />
-            <input type="button" id="address-button" value="Parse Address" />
-<!--        </form>-->
+        <input type="text" id="address-text" name="address-text" value="Unit 18/14-18 Flood St, Bondi, NSW 2026"/>
+        <br />
+        <input type="button" id="address-button" value="Parse Address" />
+        <input type="button" id="clear-button" value="Clear" />
+
+        <br /><br />
+        <pre><div id="response"></div></pre>
 
         <br />
         Source: <a href="https://github.com/dylanhogg/TODO">https://github.com/dylanhogg/TODO</a>
