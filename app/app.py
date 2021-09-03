@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 from addressnet.predict import predict_one
 
+runtime_start = datetime.now()
+
 
 def lambda_handler(event, context):
     """Lambda function handler
@@ -20,11 +22,11 @@ def lambda_handler(event, context):
     API Gateway Lambda Proxy Output Format: dict
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    start = datetime.now()
+    handler_start = datetime.now()
 
     print(f'INFO: event: [{event}]')
 
-    if not "body" in event:
+    if "body" not in event:
         raise Exception("body key not found in event")
 
     data = event["body"]
@@ -39,7 +41,7 @@ def lambda_handler(event, context):
 
     # TODO: test dict type
 
-    if not "address" in data:
+    if "address" not in data:
         raise Exception("address key not found in event body")
 
     address = data["address"]
@@ -59,8 +61,9 @@ def lambda_handler(event, context):
             {
                 "address": address,
                 "result": predict_result,
-                "time": str(datetime.now() - start),
-                "version": "0.1.5"
+                "handler_time": str(datetime.now() - handler_start),
+                "runtime_time": str(datetime.now() - runtime_start),
+                "version": "0.1.6"
             }
         ),
         "headers": {
