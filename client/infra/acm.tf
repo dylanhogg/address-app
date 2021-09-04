@@ -1,8 +1,7 @@
 # SSL Certificate
 resource "aws_acm_certificate" "ssl_certificate" {
   provider                  = aws.acm_provider
-  domain_name               = var.base_url
-  subject_alternative_names = ["*.${var.base_url}"]
+  domain_name               = var.domain
   validation_method         = "DNS"
 
   tags = var.common_tags
