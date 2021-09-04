@@ -26,3 +26,8 @@ variable "existing_hosted_zone_id" {
   type=string
 }
 
+variable "ttl" {
+  type=number
+}
+
+variable "common_tags" { }

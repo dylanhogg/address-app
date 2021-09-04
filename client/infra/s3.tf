@@ -18,12 +18,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     max_age_seconds = 3000
   }
 
-  tags = {
-    tag_version = "1.0"
-    deployment  = "tf"
-    app_name    = var.app_name
-    env         = var.env
-  }
+  tags = var.common_tags
 }
 
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {

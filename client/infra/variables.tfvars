@@ -5,3 +5,11 @@ app_name="address-app"
 domain="address-app.infocruncher.com"  # Also bucket name
 base_url="infocruncher.com"
 existing_hosted_zone_id="Z22XOKU6RYOC4M"
+ttl=300
+#ttl=86400
+common_tags = {
+  tag_version = "1.0"
+  deployment  = "tf"
+  app_name    = "address-app"
+  env         = "prd"
+}
