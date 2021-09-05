@@ -1,5 +1,3 @@
-# TODO: update for acm: https://github.com/alexhyett/terraform-s3-static-website/blob/main/src/route53.tf
-
 // NOTE: this recreates a hosted zone with desc "Managed by Terraform" next to existing
 // manually created infocruncher.com zone:
 //resource "aws_route53_zone" "route53_zone" {
