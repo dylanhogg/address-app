@@ -4,6 +4,19 @@ PROJECT_NAME=test-sam-prj-addressnet
 AWS_ACCOUNT=905234897161
 AWS_REGION=us-east-1
 
+# NOTES:
+#
+# Deploy server Lambda + API Gateway:
+#   1) make build
+#   2) make sam-deploy
+#
+# Deploy s3/route53/etc resources for client website:
+#   1) cd client; make tf-apply
+#
+# Deploy static client website:
+#   1) cd client; make s3-deploy-app
+
+
 test-build:
 	cd app; docker build -t ${PROJECT_NAME}-manual-build .
 
@@ -62,12 +75,14 @@ sam-deploy:
 	--region ${AWS_REGION} \
 	--stack-name ${PROJECT_NAME}
 
-destroy-ecr:
+destroy-ecr: ## destroy-ecr
 	aws ecr delete-repository --profile ${PROFILE} --registry-id ${AWS_ACCOUNT} --repository-name ${PROJECT_NAME} --force
 
-destroy-cf:
+destroy-cf:  ## destroy-cf
 	aws cloudformation delete-stack --profile ${PROFILE} --stack-name ${PROJECT_NAME}
 
+helpx:  ## Help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 #################################################################################
 # Self Documenting Commands                                                     #

@@ -16,7 +16,7 @@ resource "aws_cloudfront_distribution" "www_s3_distribution" {
 
   enabled             = true
   is_ipv6_enabled     = true
-  default_root_object = "app.html"
+  default_root_object = var.index_document
 
   aliases = [
     var.domain]
@@ -25,7 +25,7 @@ resource "aws_cloudfront_distribution" "www_s3_distribution" {
     error_caching_min_ttl = 0
     error_code            = 404
     response_code         = 200
-    response_page_path    = "/404.html"
+    response_page_path    = "/${var.notfound_document}"
   }
 
   default_cache_behavior {

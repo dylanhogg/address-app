@@ -26,6 +26,18 @@ variable "existing_hosted_zone_id" {
   type=string
 }
 
+variable "index_document" {
+  type=string
+}
+
+variable "error_document" {
+  type=string
+}
+
+variable "notfound_document" {
+  type=string
+}
+
 variable "ttl" {
   type=number
 }
