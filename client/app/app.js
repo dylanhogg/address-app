@@ -10,38 +10,52 @@ $(document).ready( function () {
 
         $("#response").html("Parsing address...");
 
+        var start = new Date().getTime();
+
         $.ajax({
            type: "POST",
            url: "https://address-api.infocruncher.com/predict/",
            data: '{"address": "'+address+'"}',
            success: function(data)
            {
-               // alert("success");
-               // alert(JSON.stringify(data));
-
-               $("#response").html("Success Reponse:<br />" + JSON.stringify(data, null, "  "))
+               var end = new Date().getTime();
+               var time = end - start;
+               $("#response").html("Clent timing: " + time + "<br />"
+                                                  + "Success Reponse:<br />"
+                                                  + JSON.stringify(data, null, "  "))
            },
            error: function(data)
            {
-               // alert("error: " + JSON.stringify(data));
-               $("#response").html("Error Reponse:<br />" + JSON.stringify(data, null, "  "))
+               var end = new Date().getTime();
+               var time = end - start;
+               $("#response").html("Clent timing: " + time + "<br />"
+                                                  + "Error Reponse:<br />"
+                                                  + JSON.stringify(data, null, "  "))
            },
          });
     });
 
     $("#response").html("Initialising service...");
+    var start = new Date().getTime();
     $.ajax({
        type: "POST",
        url: "https://address-api.infocruncher.com/predict/",
        data: '{"address": "1 Prime Lane"}',
        success: function(data)
        {
-           $("#response").html("Success Reponse (Priming):<br />" + JSON.stringify(data, null, "  "))
+            var end = new Date().getTime();
+            var time = end - start;
+            $("#response").html("Clent timing: " + time + " (Priming)<br />"
+                                             + "Success Reponse:<br />"
+                                             + JSON.stringify(data, null, "  "))
        },
        error: function(data)
        {
-           // alert("error: " + JSON.stringify(data));
-           $("#response").html("Error Reponse (Priming):<br />" + JSON.stringify(data, null, "  "))
+           var end = new Date().getTime();
+           var time = end - start;
+           $("#response").html("Clent timing: " + time + " (Priming)<br />"
+                                            + "Error Reponse:<br />"
+                                            + JSON.stringify(data, null, "  "))
        },
      });
 });
