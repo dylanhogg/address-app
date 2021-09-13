@@ -7,7 +7,7 @@ AWS_REGION=us-east-1
 # NOTES:
 #
 # Deploy server Lambda + API Gateway:
-#   1) make build
+#   1) make sam-build
 #   2) make sam-deploy
 #
 # Deploy s3/route53/etc resources for client website:
@@ -29,12 +29,14 @@ init:
 sam-validate:
 	sam validate --profile ${PROFILE}
 
-build:
+sam-build:
 	sam build
 
-local:
-	# sam local invoke InferenceFunction
+sam-local:
 	sam local invoke InferenceFunction --event events/event.json
+
+sam-local-error:
+	sam local invoke InferenceFunction --event events/event_error.json
 
 api:
 	sam local start-api
