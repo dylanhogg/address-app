@@ -3,7 +3,7 @@ from datetime import datetime
 from addressnet.predict import predict_one
 
 runtime_start = datetime.now()
-app_version = "0.1.9"
+app_version = "0.1.10"
 model_dir = "/opt/ml/model/pretrained"
 
 
@@ -15,9 +15,7 @@ def predict_address(address):
     return result
 
 
-def handle_request(event, handler_start):
-    print(f'INFO: source event: [{event}]')
-
+def handle_api_event(event, handler_start):
     if "body" not in event:
         raise Exception("body key not found in event")
 
@@ -81,8 +79,13 @@ def lambda_handler(event, context):
     handler_start = datetime.now()
     allow_origin = "*"   # TODO: lockdown Access-Control-Allow-Origin value below?
 
+    print(f'INFO: source event: {event}')
+    print(f'INFO: source context: {context}')
+
     try:
-        response_body = handle_request(event, handler_start)
+        # TODO: work out if a warmer event and handle accordingly
+
+        response_body = handle_api_event(event, handler_start)
 
         success_api_result = {
             "statusCode": 200,

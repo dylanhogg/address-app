@@ -48,6 +48,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
+      # Policies: AmazonDynamoDBFullAccess
       Events:
         Inference:
           # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-api.html
@@ -57,6 +58,15 @@ Resources:
             RestApiId: !Ref InferenceApi
             Path: /predict
             Method: post
+        ScheduledEvent:
+          # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#schedule
+          # https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+          Type: Schedule
+          Properties:
+            Name: AddressPredictionSchedule
+            Schedule: cron(0/15 * * * ? *)
+            Description: Address Prediction Function Keep Warm Schedule
+            Enabled: True
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./app
