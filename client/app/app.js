@@ -1,4 +1,5 @@
 var version = "v0.0.1";
+var predict_count = 0;
 
 $(document).ready( function () {
     $("#clear-button").click(function(){
@@ -8,7 +9,11 @@ $(document).ready( function () {
     $("#address-button").click(function(){
         var address = $("#address-text").val();
 
-        $("#response").html("Reading address...");
+        if (predict_count == 0) {
+           $("#response").html("Reading address...<br />(first time can take a few secs)");
+        } else {
+           $("#response").html("Reading address...");
+        }
 
         var start = new Date().getTime();
         $.ajax({
@@ -19,6 +24,7 @@ $(document).ready( function () {
            retryLimit : 1,
            success: function(data)
            {
+               predict_count++;
                var end = new Date().getTime();
                var time = end - start;
                $("#response").html("Client timing: " + time + "<br />"
