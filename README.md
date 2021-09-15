@@ -1,110 +1,55 @@
-# test-sam-prj-addressnet
+# Address App
 
-This project contains source code and supporting files for a serverless application for 
-converting free-text Australian addresses to [GNAF](https://data.gov.au/dataset/ds-dga-19432f89-dc3a-4ef3-b943-5326ef1dbecc/details) segmented addresses. It includes the following files and folders:
+TLDR: Maps free-text address -> Structured fields using machine learning.
 
-- app/app.py - Code for the application's Lambda function including the code for ML inferencing.
-- app/Dockerfile - The Dockerfile to build the container image.
-- app/model - A simple Tensorflow model for classifying handwritten digits trained against the MNIST dataset.
-- app/requirements.txt - The pip requirements to be installed during the container build.
-- events - Invocation events that you can use to invoke the function.
-- template.yaml - A template that defines the application's AWS resources.
-- training.ipynb - A jupyter notebook to show the training process for the sample model at `app/model`.
+This project has an api and application to map free-text street addresses to structured Australian [GNAF](https://geoscape.com.au/data/g-naf/) fields.
 
-The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
+It borrows heavily from the excellent [address-net](https://github.com/jasonrig/address-net) project and uses a pretrained Tensorflow model to parse and segment the free text address.
 
-While this template does not use any auth, you will almost certainly want to use auth in order to productionize. Please follow [these instructions](https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#function-auth-object) to set up auth with SAM.
 
-## Deploy the sample application
+## Working examples
 
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
+Application: https://address-app.infocruncher.com/
 
-To use the SAM CLI, you need the following tools.
+Api: https://address-api.infocruncher.com/
 
-* SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
-You may need the following for local testing.
-* [Python 3 installed](https://www.python.org/downloads/)
+## Project Structure
 
-To build and deploy your application for the first time, run the following in your shell:
+### App
 
-```bash
-sam build
-sam deploy --guided
+The `/client` folder is a [Terraform](https://www.terraform.io/) managed S3 website app hosted at [address-app.infocruncher.com](https://address-app.infocruncher.com/) that uses the [api](https://address-api.infocruncher.com/) endpoint. 
+
+See `/client/Makefile` for more information around deploying the app to AWS.
+
+
+### Api
+
+The project root is an [AWS SAM](https://aws.amazon.com/serverless/sam/) managed API [address-api.infocruncher.com](https://address-api.infocruncher.com/) consisting of an API Gateway with Lambda backend. 
+
+The actual app that is deployed to Lambda is Dockerised and can be found in `/app` 
+
+See `/Makefile` for more information around deploying the api to AWS.
+
+Example Api response given a POST request with `Unit 18/14-18 Flood St, Bondi, NSW 2026`:
+
 ```
-
-The first command will build a docker image from a Dockerfile and then copy the source of your application inside the Docker image. The second command will package and deploy your application to AWS, with a series of prompts:
-
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
-
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
-
-## Use the SAM CLI to build and test locally
-
-Build your application with the `sam build` command.
-
-```bash
-test-sam-prj-addressnet$ sam build
+{
+  "address": "Unit 18/14-18 Flood St, Bondi, NSW 2026",
+  "result": {
+    "flat_type": "UNIT",
+    "flat_number": "18",
+    "number_first": "14",
+    "number_last": "18",
+    "street_name": "FLOOD",
+    "street_type": "STREET",
+    "locality_name": "BONDI",
+    "state": "NEW SOUTH WALES",
+    "postcode": "2026"
+  },
+  "handler_time": "0:00:01.180911",
+  "runtime_time": "0:04:24.914928",
+  "model_dir": "/opt/ml/model/pretrained",
+  "version": "0.1.11"
+}
 ```
-
-The SAM CLI builds a docker image from a Dockerfile and then installs dependencies defined in `app/requirements.txt` inside the docker image. The processed template file is saved in the `.aws-sam/build` folder.
-
-Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
-
-Run functions locally and invoke them with the `sam local invoke` command.
-
-```bash
-test-sam-prj-addressnet$ sam local invoke InferenceFunction --event events/event.json
-```
-
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
-
-```bash
-test-sam-prj-addressnet$ sam local start-api
-test-sam-prj-addressnet$ curl http://localhost:3000/classify_digit
-```
-
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
-
-```yaml
-      Events:
-        Inference:
-          Type: Api
-          Properties:
-            Path: /classify_digit
-            Method: post
-```
-
-## Add a resource to your application
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
-
-## Fetch, tail, and filter Lambda function logs
-
-To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
-
-`NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
-
-```bash
-test-sam-prj-addressnet$ sam logs -n InferenceFunction --stack-name test-sam-prj-addressnet --tail
-```
-
-You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
-
-## Cleanup
-
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
-
-```bash
-aws cloudformation delete-stack --stack-name test-sam-prj-addressnet
-```
-
-## Resources
-
-See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
-
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
