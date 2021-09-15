@@ -1,16 +1,16 @@
 # https://aws.amazon.com/blogs/compute/deploying-machine-learning-models-with-serverless-templates/
 PROFILE=prd-non-tf-905234897161
-PROJECT_NAME=test-sam-prj-addressnet
+PROJECT_NAME=address-api-infocruncher-com
 AWS_ACCOUNT=905234897161
 AWS_REGION=us-east-1
 
 # NOTES:
 #
-# Deploy server Lambda + API Gateway:
+# Deploy server Lambda + API Gateway (AWS SAM managed):
 #   1) make sam-build
 #   2) make sam-deploy
 #
-# Deploy s3/route53/etc resources for client website:
+# Deploy s3/route53/etc resources for client website (Terraform managed):
 #   1) cd client; make tf-apply
 #
 # Deploy static client website:
@@ -59,23 +59,23 @@ create-ecr-repo:
     --image-scanning-configuration scanOnPush=true
     # Copy the repositoryUri from the output. This is needed in the next step.
     # Initiate the AWS SAM guided deployment using the deploy command
-    # ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/test-sam-prj-addressnet
-
-sam-deploy-initial:
-	sam deploy \
-	--guided \
-	--profile ${PROFILE} \
-	--config-env ${PROFILE} \
-	--region ${AWS_REGION} \
-	--stack-name ${PROJECT_NAME} \
-	--image-repository ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME}
+    # ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}
 
 sam-deploy:
 	sam deploy \
 	--profile ${PROFILE} \
 	--config-env ${PROFILE} \
 	--region ${AWS_REGION} \
-	--stack-name ${PROJECT_NAME}
+	--stack-name ${PROJECT_NAME} \
+	--capabilities CAPABILITY_IAM \
+	--image-repository ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME}
+
+sam-delete:
+	sam delete \
+    	--profile ${PROFILE} \
+    	--config-env ${PROFILE} \
+    	--region ${AWS_REGION} \
+    	--stack-name ${PROJECT_NAME}
 
 destroy-ecr: ## destroy-ecr
 	aws ecr delete-repository --profile ${PROFILE} --registry-id ${AWS_ACCOUNT} --repository-name ${PROJECT_NAME} --force
