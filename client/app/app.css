@@ -28,3 +28,11 @@ body {
     background-image: none;
     background-color: #ffffff;
 }
+
+#source-info {
+     color: #ccc;
+}
+
+#source-info a {
+     color: #ccc;
+}
