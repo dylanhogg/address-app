@@ -24,7 +24,7 @@ Resources:
   InferenceApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: Address Prediction Api Gateway
+      Name: address-api.infocruncher.com
       StageName: Prod
       TracingEnabled: true
       # EndpointConfiguration: REGIONAL
