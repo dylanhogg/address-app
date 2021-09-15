@@ -13,12 +13,17 @@ serve-local-app:
 	cd app; python3 -m http.server 8002
 
 ## Browse local js client
-browse-s3-app:
-	open http://${BUCKET_NAME}/
+browse-local-app:
+	open http://localhost:8002/app.html
 
-## Browse to public S3 url
-browse-s3:
-    open http://${BUCKET_NAME}.s3-website-${AWS_REGION}.amazonaws.com/
+## Browse local js client
+browse-s3-app:
+	open http://${BUCKET_NAME}.s3-website-${AWS_REGION}.amazonaws.com/
+	#open https://s3.amazonaws.com/${BUCKET_NAME}/app.html
+
+## Browse to Cloudfront url
+browse-cf-app:
+	open http://${BUCKET_NAME}/
 
 
 # AWS Command Tools
@@ -31,6 +36,8 @@ s3-deploy-app:
 s3-delete-app:
 	aws s3 rm s3://${BUCKET_NAME} --recursive
 
+destroy-cf:  ## destroy-cf
+	aws cloudformation delete-stack --profile ${AWS_PROFILE} --stack-name ${PROJECT_NAME}
 
 # Terraform
 
