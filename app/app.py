@@ -3,7 +3,7 @@ from datetime import datetime
 from addressnet.predict import predict_one
 
 runtime_start = datetime.now()
-app_version = "0.1.10"
+app_version = "0.1.11"
 model_dir = "/opt/ml/model/pretrained"
 
 
@@ -34,7 +34,10 @@ def handle_api_event(event, handler_start):
     if "address" not in data:
         raise Exception("address key not found in event body")
 
-    address = data["address"]
+    address = data["address"].strip()
+
+    if len(address) == 0:
+        raise Exception("Address is empty")
 
     # TEMP:
     if address == "SimulateError":
