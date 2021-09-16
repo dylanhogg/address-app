@@ -1,10 +1,13 @@
 import json
+import uuid
+import boto3
 from datetime import datetime
 from addressnet.predict import predict_one
 
 runtime_start = datetime.now()
-app_version = "0.1.11"
+app_version = "0.1.13"
 model_dir = "/opt/ml/model/pretrained"
+dynamodb = boto3.resource('dynamodb')
 
 
 def predict_address(address):
@@ -34,6 +37,7 @@ def handle_api_event(event, handler_start):
     if "address" not in data:
         raise Exception("address key not found in event body")
 
+    # TODO: handle multiple address input
     address = data["address"].strip()
 
     if len(address) == 0:
@@ -60,7 +64,25 @@ def handle_api_event(event, handler_start):
         })
 
     print(f'INFO: api_body: [{api_body}]')
-    return api_body
+    return address, api_body
+
+
+def save_response(request_id, success, address, event, response):
+    try:
+        table = dynamodb.Table("address-api-infocruncher-com-usage")
+        table.put_item(
+            Item={
+                "requestId": request_id,
+                "datetime": str(datetime.now()),
+                "success": success,
+                "address": address,
+                "response": response,
+                "event": event,
+                "app_version": app_version
+            }
+        )
+    except Exception as ex:
+        print(f"ERROR: dynamodb log exception: {ex}")
 
 
 def lambda_handler(event, context):
@@ -79,6 +101,7 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
+    request_id = uuid.uuid4().hex
     handler_start = datetime.now()
     allow_origin = "*"   # TODO: lockdown Access-Control-Allow-Origin value below?
 
@@ -88,7 +111,7 @@ def lambda_handler(event, context):
     try:
         # TODO: work out if a warmer event and handle accordingly
 
-        response_body = handle_api_event(event, handler_start)
+        address, response_body = handle_api_event(event, handler_start)
 
         success_api_result = {
             "statusCode": 200,
@@ -99,6 +122,7 @@ def lambda_handler(event, context):
             "isBase64Encoded": False
         }
         print(f'INFO: success_api_result: [{success_api_result}]')
+        save_response(request_id, True, address, event, success_api_result)
         return success_api_result
 
     except Exception as ex:
@@ -121,4 +145,5 @@ def lambda_handler(event, context):
             "isBase64Encoded": False
         }
         print(f'INFO: error_api_result: [{error_api_result}]')
+        save_response(request_id, False, "", event, error_api_result)
         return error_api_result
