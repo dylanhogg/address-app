@@ -1,18 +1,17 @@
 body {
- background-image: url("img/background.png");
+ background-image: url("img/background.jpg");
  background-color: #ffffff;
  background-repeat: no-repeat;
- background-position: center;
+ background-position-x: center;
 }
 
 #address-text {
-    width: 380px;
+    width: 350px;
 }
 
 #container {
-    width: 390px;
-    height: 500px;
-    /*background-color: red;*/
+    width: 360px;
+    /*height: 500px;*/
 
     position: absolute;
     top:0;
@@ -25,14 +24,42 @@ body {
     margin-right:auto;
     margin-top:40px;
 
+    padding: 5px;
+
     background-image: none;
     background-color: #ffffff;
 }
 
+table,
+th,
+td {
+  border: 1px solid #666;
+  width: 100%;
+}
+
+table th,
+table td {
+  padding: 5px;
+  padding-right: 15px;
+}
+
 #source-info {
-     color: #ccc;
+  color: #ddd;
 }
 
 #source-info a {
-     color: #ccc;
+  color: #ddd;
+}
+
+#debug-response {
+  display:none;
+}
+
+#address-button, #clear-button {
+  margin-top: 10px;
+  margin-right: 3px;
+}
+
+#source-info #view-debug-info {
+  text-decoration: none;
 }

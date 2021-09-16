@@ -32,16 +32,20 @@
 </head>
 <body>
     <div id="container">
-        <h4>Address Reader</h4>
-        <input type="text" id="address-text" name="address-text" value="Unit 18/14-18 Flood St, Bondi, NSW 2026"/>
+        <h4>Address</h4>
+        <input type="text" id="address-text" name="address-text" value=""/>
         <br />
-        <input type="button" id="address-button" value="Read" />
-<!--        <input type="button" id="clear-button" value="Clear" />-->
+        <input type="button" id="address-button" value="Read Address" />
+        <input type="button" id="clear-button" value="New" />
+        <input type="button" id="random-button" value="Random" />
         <br /><br />
-        <pre><div id="response"></div></pre>
+        <pre><div id="response">Hi, I read free-text street addresses<br /><br />And convert them to known segements<br /><br />Try me out :)
+        </div></pre>
+        <pre><div id="debug-response"></div></pre>
 
         <div id="source-info">
-        Source: <a target="_blank" href="https://github.com/dylanhogg/address-app">github.com/dylanhogg/address-app</a>
+        Source: <a target="_blank" href="https://github.com/dylanhogg/address-app">github.com/dylanhogg/address-app</a><br />
+        <a id="view-debug-info" href="#">Show debug info</a>
         </div>
     </div>
 </body>
