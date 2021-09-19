@@ -1,3 +1,7 @@
+# MIT License
+# Copyright (c) 2018 Jason Rigby
+# Source: https://github.com/jasonrig/address-net/
+
 from typing import Optional, Union, Callable, List
 from collections import OrderedDict
 

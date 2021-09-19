@@ -1,3 +1,7 @@
+# MIT License
+# Copyright (c) 2018 Jason Rigby
+# Source: https://github.com/jasonrig/address-net/
+
 import os
 from typing import Dict, List, Union
 import textdistance
