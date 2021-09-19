@@ -16,44 +16,54 @@ AWS_REGION=us-east-1
 # Deploy static client website:
 #   1) cd client; make s3-deploy-app
 
-
-test-build:
+## Local docker build
+local-build:
 	cd app; docker build -t ${PROJECT_NAME}-manual-build .
 
-bash-test-build:
+## Bash into local docker build
+local-build-bash:
 	docker run -it --entrypoint=/bin/bash ${PROJECT_NAME}-manual-build
 
-init:
+## AWS SAM init
+sam-init:
 	sam init --runtime python3.7 --name ${PROJECT_NAME}
 
+## AWS SAM validate
 sam-validate:
 	sam validate --profile ${PROFILE}
 
+## AWS SAM build
 sam-build:
 	sam build
 
+## AWS SAM local invoke test success
 sam-local:
 	sam build
 	#sam local invoke InferenceFunction --event events/event.json
 	#sam local invoke InferenceFunction --event events/event_scheduled.json
 	sam local invoke InferenceFunction --event events/event_sample.json
 
+## AWS SAM local invoke test error
 sam-local-error:
 	sam build
 	sam local invoke InferenceFunction --event events/event_error.json
 
-api:
+## AWS SAM local endpoint to test API
+sam-api:
 	sam local start-api
 
+## AWS SAM generate sample payload
 sam-gen-event:
 	# To test
 	# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-hello-world.html
 	sam local generate-event apigateway aws-proxy --body "" --path "hello" --method GET > api-event.json
 	diff api-event.json events/event.json
 
+## AWS ECR login
 login-ecr:
 	aws --profile ${PROFILE} --region ${AWS_REGION} ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com
 
+## AWS Create ECR repo for use in SAM deploy
 create-ecr-repo:
 	aws ecr create-repository \
     --profile ${PROFILE} \
@@ -65,6 +75,7 @@ create-ecr-repo:
     # Initiate the AWS SAM guided deployment using the deploy command
     # ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}
 
+### AWS SAM deploy application
 sam-deploy:
 	sam deploy \
 	--profile ${PROFILE} \
@@ -75,6 +86,17 @@ sam-deploy:
 	--image-repository ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME} \
 	--confirm-changeset
 
+### AWS SAM deploy application (no confirmation)
+sam-deploy:
+	sam deploy \
+	--profile ${PROFILE} \
+	--config-env ${PROFILE} \
+	--region ${AWS_REGION} \
+	--stack-name ${PROJECT_NAME} \
+	--capabilities CAPABILITY_IAM \
+	--image-repository ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME}
+
+### AWS SAM delete application
 sam-delete:
 	sam delete \
     	--profile ${PROFILE} \
@@ -82,10 +104,12 @@ sam-delete:
     	--region ${AWS_REGION} \
     	--stack-name ${PROJECT_NAME}
 
+### AWS ECR delete repo
 destroy-ecr: ## destroy-ecr
 	aws ecr delete-repository --profile ${PROFILE} --registry-id ${AWS_ACCOUNT} --repository-name ${PROJECT_NAME} --force
 
-destroy-cf:  ## destroy-cf
+### AWS ECR delete cloudformation stack
+destroy-cf:
 	aws cloudformation delete-stack --profile ${PROFILE} --stack-name ${PROJECT_NAME}
 
 helpx:  ## Help
