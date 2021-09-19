@@ -33,9 +33,13 @@ sam-build:
 	sam build
 
 sam-local:
-	sam local invoke InferenceFunction --event events/event.json
+	sam build
+	#sam local invoke InferenceFunction --event events/event.json
+	#sam local invoke InferenceFunction --event events/event_scheduled.json
+	sam local invoke InferenceFunction --event events/event_sample.json
 
 sam-local-error:
+	sam build
 	sam local invoke InferenceFunction --event events/event_error.json
 
 api:
@@ -68,7 +72,8 @@ sam-deploy:
 	--region ${AWS_REGION} \
 	--stack-name ${PROJECT_NAME} \
 	--capabilities CAPABILITY_IAM \
-	--image-repository ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME}
+	--image-repository ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME} \
+	--confirm-changeset
 
 sam-delete:
 	sam delete \
