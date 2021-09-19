@@ -3,28 +3,45 @@ Transform: AWS::Serverless-2016-10-31
 # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md
 
 Description: >
-  Address API
+  Address API infrastructure. R53, Cert, LambdaFunction, DynamoTable, Scheduled EventRule.
+
+Parameters:
+  AppName:
+    Type: String
+    Default: "AddressPrediction"
+  DomainName:
+    Type: String
+    Default: "address-api.infocruncher.com"
+  HostedZoneName:
+    Type: String
+    Default: "infocruncher.com."
+  FunctionName:
+    Type: String
+    Default: "AddressPredictionInferenceFunction"
+  TableName:
+    Type: String
+    Default: "AddressPredictionInferenceFunctionUsage"
 
 Globals:
   Function:
     Timeout: 25
     MemorySize: 1769  # 1769 = 1 vCPU
     ReservedConcurrentExecutions: 20
-#    Environment:
-#      Variables:
-#        TABLE_NAME: data-table
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TableName
 
 Resources:
   InferenceApiCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName: address-api.infocruncher.com
+      DomainName: !Ref DomainName
       ValidationMethod: DNS
 
   InferenceApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: address-api.infocruncher.com
+      Name: !Ref DomainName
       StageName: Prod
       TracingEnabled: true
       # EndpointConfiguration: REGIONAL
@@ -35,12 +52,12 @@ Resources:
         MaxAge: "'600'"
         # AllowCredentials: true
       Domain:
-        DomainName: address-api.infocruncher.com
+        DomainName: !Ref DomainName
         CertificateArn: !Ref InferenceApiCertificate
         Route53:
-          HostedZoneName: "infocruncher.com."
+          HostedZoneName: !Ref HostedZoneName
       Tags:
-        App: AddressPrediction
+        App: !Ref AppName
 
   InferenceFunction:
     # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
@@ -48,7 +65,13 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      # Policies: AmazonDynamoDBFullAccess
+      FunctionName: !Ref FunctionName
+      Description: !Join
+        - ""
+        - - "Function for "
+          - !Ref DomainName
+      Tags:
+        App: !Ref AppName
       Policies:
         DynamoDBWritePolicy:
           TableName: !Ref InferenceTable
@@ -66,9 +89,15 @@ Resources:
           # https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
           Type: Schedule
           Properties:
-            Name: AddressPredictionSchedule
-            Schedule: cron(0/15 * * * ? *)
-            Description: Address Prediction Function Keep Warm Schedule
+            Name: !Join
+              - ""
+              - - !Ref AppName
+                - "ScheduleEvent"
+            Schedule: cron(0/15 * * * ? *)  # (0/15 * * * ? *) is every 15 mins.
+            Description: !Join
+              - ""
+              - - !Ref FunctionName
+                - "Function Keep Warm Schedule"
             Enabled: True
     Metadata:
       Dockerfile: Dockerfile
@@ -82,9 +111,9 @@ Resources:
       PrimaryKey:
         Name: requestId
         Type: String
-      TableName: address-api-infocruncher-com-usage
+      TableName: !Ref TableName
       Tags:
-        App: AddressPrediction
+        App: !Ref AppName
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -102,3 +131,6 @@ Outputs:
   InferenceFunction:
     Description: "Inference Lambda Function ARN"
     Value: !GetAtt InferenceFunction.Arn
+  TableName:
+    Description: "Dynamo Table ARN"
+    Value: !GetAtt InferenceTable.Arn
