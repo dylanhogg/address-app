@@ -67,7 +67,6 @@ def handle_api_event(event, handler_start) -> ApiResult:
 
 def save_response(request_id, success, api_result, event, response) -> bool:
     try:
-        # table = dynamodb.Table(dynamodb_table)
         table.put_item(
             Item={
                 "requestId": request_id,
@@ -80,6 +79,7 @@ def save_response(request_id, success, api_result, event, response) -> bool:
                 "runtime_time": api_result.runtime_time,
                 "response": response,
                 "event": event,
+                "model_dir": model_dir,
                 "app_version": app_version
             }
         )
