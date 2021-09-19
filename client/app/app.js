@@ -1,4 +1,4 @@
-const version = "v0.0.1";
+const version = "v1.0.0";
 const predictionUrl = "https://address-api.infocruncher.com/predict/";
 const randomAddresses = [
         "48a Pirrama Rd Pyrmont NSW 2009",
@@ -41,6 +41,7 @@ $(document).ready(function () {
 
     $("#address-button").click(function(){
         $("#debug-response").html("");
+        $("#loader").addClass("loader");
 
         var address = $("#address-text").val();
         if (address.length == 0) {
@@ -49,9 +50,9 @@ $(document).ready(function () {
         }
 
         if (predict_count == 0) {
-           $("#response").html("Reading address...<br />...and waking up the server");
+           $("#response").html("Segmenting address...<br />...and waking up the server");
         } else {
-           $("#response").html("Reading address...");
+           $("#response").html("Segmenting address...");
         }
 
         var start = new Date().getTime();
@@ -63,6 +64,7 @@ $(document).ready(function () {
            retryLimit : 1,
            success: function(data)
            {
+               $("#loader").removeClass("loader");
                predict_count++;
                var end = new Date().getTime();
                var time = end - start;
@@ -88,14 +90,15 @@ $(document).ready(function () {
            {
                this.tryCount++;
                if (this.tryCount <= this.retryLimit) {
-                   $("#response").html("Retry " + this.tryCount + "...");
+                   $("#response").html("Error, retry " + this.tryCount + " of " + this.retryLimit + "...");
                    $.ajax(this);
                    return;
                }
                var end = new Date().getTime();
                var time = end - start;
 
-               $("#response").html("Sorry something went wrong, please try again")
+               $("#loader").removeClass("loader");
+               $("#response").html("Oops, something went wrong<br />Please try again")
 
                var debugInfo = "\nDEBUG INFO:\nClient timing: " + time + "\n"
                                             + "Retries: "+this.tryCount+"\n"
