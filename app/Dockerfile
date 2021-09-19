@@ -7,6 +7,7 @@ RUN python3.7 -m pip install --upgrade pip
 RUN python3.7 -m pip install -r requirements.txt -t .
 
 COPY addressnet ./addressnet
+COPY library ./library
 COPY app.py ./
 
 CMD ["app.lambda_handler"]
