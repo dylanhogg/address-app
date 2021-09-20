@@ -69,7 +69,7 @@ create-ecr-repo:
     --profile ${PROFILE} \
     --repository-name ${PROJECT_NAME} \
     --image-tag-mutability MUTABLE \
-    --tags Key=demo,Value=true \
+    --tags Key=App,Value=${PROJECT_NAME} \
     --image-scanning-configuration scanOnPush=true
     # Copy the repositoryUri from the output. This is needed in the next step.
     # Initiate the AWS SAM guided deployment using the deploy command
