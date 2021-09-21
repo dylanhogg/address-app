@@ -6,6 +6,7 @@ This project has an api and application to map free-text street addresses to str
 
 It borrows heavily from the excellent [address-net](https://github.com/jasonrig/address-net) project and uses a pretrained Tensorflow model to parse and segment the free text address.
 
+![demo](docs/app-image.png)
 
 ## Working examples
 
