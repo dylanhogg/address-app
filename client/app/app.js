@@ -16,16 +16,16 @@ var predict_count = 0;
 
 $(document).ready(function () {
     var randomElement = randomAddresses[Math.floor(Math.random() * randomAddresses.length)];
-    $("#address-text").val(randomElement)
+    $("#input-text").val(randomElement)
 
     $("#clear-button").click(function(){
-        $("#address-text").val("")
-        $("#address-text").focus();
+        $("#input-text").val("")
+        $("#input-text").focus();
     });
 
     $("#random-button").click(function(){
         var randomElement = randomAddresses[Math.floor(Math.random() * randomAddresses.length)];
-        $("#address-text").val(randomElement)
+        $("#input-text").val(randomElement)
     });
 
     $("#view-debug-info").click(function(){
@@ -42,7 +42,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#address-text").keypress(function (e) {
+    $("#input-text").keypress(function (e) {
       if (e.which == 13) {
         $("#address-button").click();
         return false;
@@ -53,7 +53,7 @@ $(document).ready(function () {
         $("#debug-response").html("");
         $("#loader").addClass("loader");
 
-        var address = $("#address-text").val();
+        var address = $("#input-text").val();
         if (address.length == 0) {
             $("#response").html("Address is empty<br /><br />Experiment by clicking the Random button");
             $("#loader").removeClass("loader");
