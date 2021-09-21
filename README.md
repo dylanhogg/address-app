@@ -1,6 +1,6 @@
 # Address App
 
-TLDR: Maps free-text address -> Structured fields using machine learning.
+TLDR: Mapping free-text address -> Structured fields using machine learning.
 
 This project has an api and application to map free-text street addresses to structured Australian [GNAF](https://geoscape.com.au/data/g-naf/) fields.
 

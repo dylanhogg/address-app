@@ -10,11 +10,11 @@ BUCKET_NAME=address-app.infocruncher.com
 
 ## Serve local js client app
 serve-local-app:
-	cd app; python3 -m http.server 8002
+	cd app; python3 -m http.server 8003
 
 ## Browse local js client
 browse-local-app:
-	open http://localhost:8002/app.html
+	open http://localhost:8003/app.html
 
 ## Browse local js client
 browse-s3-app:
@@ -30,7 +30,9 @@ browse-cf-app:
 
 ## AWS S3 cp app to S3
 s3-deploy-app:
+	# TODO: sync?
 	aws s3 cp app s3://${BUCKET_NAME} --recursive --profile ${AWS_PROFILE}
+	# NOTE: Remember to invalidate Cloudfront cache to materialise changes
 
 ## AWS S3 rm static_files from S3
 s3-delete-app:
