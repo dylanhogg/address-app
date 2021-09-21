@@ -34,7 +34,7 @@ def handle_api_event(event, handler_start) -> ApiResult:
         raise Exception("address key not found in event body")
 
     # TODO: handle multiple address input
-    address = data["address"].strip()
+    address = data["address"].strip().replace("\n", " ").replace("\r", " ").replace("\t", " ")
 
     if len(address) == 0:
         raise Exception("Address is empty")
