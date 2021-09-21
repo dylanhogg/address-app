@@ -30,6 +30,16 @@ $(document).ready(function () {
 
     $("#view-debug-info").click(function(){
         $("#debug-response").toggle();
+        return false;
+    });
+
+    $("#view-about-info").click(function(){
+        var about = "Address Segmenter App by Dylan Hogg\n" +
+        "<a href='https://address-app.infocruncher.com/'>address-app.infocruncher.com</a>\n\n" +
+        "I'm an app that segments an address\ninto structured fields using the\n<a href='https://github.com/jasonrig/address-net'>address-net</a> library\n\n" +
+        "Source code available:\n<a href='https://github.com/dylanhogg/address-app'>github.com/dylanhogg/address-app</a>";
+        $("#response").html(about)
+        return false;
     });
 
     $("#address-text").keypress(function (e) {
@@ -45,7 +55,8 @@ $(document).ready(function () {
 
         var address = $("#address-text").val();
         if (address.length == 0) {
-            $("#response").html("Address is empty.<br />Experiment with the Random button.");
+            $("#response").html("Address is empty<br /><br />Experiment by clicking the Random button");
+            $("#loader").removeClass("loader");
             return;
         }
 
@@ -59,7 +70,7 @@ $(document).ready(function () {
         $.ajax({
            type: "POST",
            url: predictionUrl,
-           data: '{"address": "'+address+'"}',
+           data: '{"address": "'+address.replace(/(\r\n|\n|\r)/gm, " ")+'"}',
            tryCount : 0,
            retryLimit : 1,
            success: function(data)
@@ -70,6 +81,7 @@ $(document).ready(function () {
                var time = end - start;
 
                var response = "<table class='response'>";
+               response += "<tr><th>Key</th><th>Value</th></tr>";
                var segments = data["result"];
                for (var key in segments){
                  var key_display = key.replace(/_/g, " ");
@@ -98,7 +110,7 @@ $(document).ready(function () {
                var time = end - start;
 
                $("#loader").removeClass("loader");
-               $("#response").html("Oops, something went wrong<br />Please try again")
+               $("#response").html("Oops, something went wrong<br /><br />Please try again")
 
                var debugInfo = "\nDEBUG INFO:\nClient timing: " + time + "\n"
                                             + "Retries: "+this.tryCount+"\n"
